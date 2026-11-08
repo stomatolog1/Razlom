@@ -1,6 +1,6 @@
 package model
 
-type playlist struct {
+type Playlist struct {
 	ID uint `json:"id" gorm:"primaryKey"`
 	ID_music []int `json:"id_music"`
 	ID_user int `json:"id_user"`

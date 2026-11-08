@@ -27,3 +27,11 @@ func (r *MusicRepository) GetAllByUser(UserID uint) ([]model.Music, error){
 	return music, nil
 }
 
+func (r *MusicRepository) GetAllByGenre(Genre string) ([]model.Music, error){
+	var music []model.Music
+	if err:= r.db.Where("genre = ?", Genre).Find(&music).Error; err != nil{
+		return nil, err
+	}
+	return  music, nil
+}
+

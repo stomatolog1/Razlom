@@ -1,6 +1,6 @@
 package model
 
-type like struct {
+type Like struct {
 	ID       uint  `json:"id" gorm:"primaryKey"`
 	ID_music []int `json:"id_music"`
 	ID_user  int   `json:"id_user"`
