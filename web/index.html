@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111112">
+    <title>Razlom — музыка рядом</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="Razlom — главная">
+          <span class="brand-mark">R</span>
+          <span>razlom</span>
+        </a>
+
+        <nav class="primary-nav" aria-label="Основная навигация">
+          <a class="nav-link active" href="#home">
+            <span class="nav-icon">⌂</span> Главная
+          </a>
+          <a class="nav-link" href="#discover">
+            <span class="nav-icon">⌕</span> Найти музыку
+          </a>
+          <a class="nav-link" href="#library">
+            <span class="nav-icon">▤</span> Моя коллекция
+          </a>
+        </nav>
+
+        <div class="sidebar-section">
+          <div class="section-heading">
+            <span>Плейлисты</span>
+            <button class="icon-button" id="create-playlist-button" type="button" aria-label="Создать плейлист">+</button>
+          </div>
+          <nav class="playlist-nav" id="playlist-nav" aria-label="Мои плейлисты"></nav>
+        </div>
+
+        <div class="sidebar-profile">
+          <div class="avatar">М</div>
+          <div>
+            <strong>Миша</strong>
+            <span>Слушатель</span>
+          </div>
+          <button class="icon-button more-button" type="button" aria-label="Настройки профиля">···</button>
+        </div>
+      </aside>
+
+      <main class="main-content" id="home">
+        <header class="topbar">
+          <div class="history-buttons" aria-label="История навигации">
+            <button class="round-button" type="button" aria-label="Назад">‹</button>
+            <button class="round-button" type="button" aria-label="Вперёд">›</button>
+          </div>
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="search-input" type="search" placeholder="Трек, артист или настроение" autocomplete="off">
+            <kbd>⌘ K</kbd>
+          </label>
+          <button class="upload-button" id="add-track-button" type="button">
+            <span aria-hidden="true">↑</span> Добавить трек
+          </button>
+        </header>
+
+        <section class="content-wrap">
+          <div class="greeting-row">
+            <div>
+              <p class="eyebrow">ТВОЯ МУЗЫКА, ТВОИ ПРАВИЛА</p>
+              <h1>Слушай своё.</h1>
+            </div>
+            <span class="online-note"><span class="status-dot"></span> Сейчас в эфире</span>
+          </div>
+
+          <section class="featured-playlist" aria-labelledby="playlist-title">
+            <div class="featured-cover cover-cover cover-large">
+              <span class="cover-label">R / 01</span>
+              <span class="cover-orbit"></span>
+              <span class="cover-shape"></span>
+            </div>
+            <div class="featured-info">
+              <span class="content-type">ПЛЕЙЛИСТ</span>
+              <h2 id="playlist-title">Ночная смена</h2>
+              <p class="featured-description">Музыка для города, который не спит.</p>
+              <div class="playlist-meta">
+                <span class="avatar avatar-small">М</span>
+                <strong>Миша</strong>
+                <span class="meta-separator">·</span>
+                <span id="featured-track-count">0 треков</span>
+                <span class="meta-separator">·</span>
+                <span>Обновлён сегодня</span>
+              </div>
+              <div class="featured-actions">
+                <button class="play-featured-button" id="play-playlist-button" type="button">
+                  <span aria-hidden="true">▶</span> Слушать
+                </button>
+                <button class="outline-button" id="add-to-playlist-button" type="button">
+                  <span aria-hidden="true">+</span> Добавить трек
+                </button>
+                <button class="round-button light-button" type="button" aria-label="Дополнительно">···</button>
+              </div>
+            </div>
+            <div class="featured-glow" aria-hidden="true"></div>
+          </section>
+
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">ТВОЯ ПОДБОРКА</p>
+              <h2 id="track-section-title">Треки плейлиста</h2>
+            </div>
+            <button class="text-button" id="sort-button" type="button">Недавно добавленные <span aria-hidden="true">⌄</span></button>
+          </div>
+
+          <div class="track-list" id="track-list" aria-live="polite"></div>
+          <p class="empty-state hidden" id="empty-state">Здесь пока пусто. Добавь первый трек в плейлист.</p>
+
+          <section class="suggestions" id="discover">
+            <div class="section-title-row">
+              <div>
+                <p class="eyebrow">МОЖЕТ ПОНРАВИТЬСЯ</p>
+                <h2>Забрать в коллекцию</h2>
+              </div>
+              <button class="text-button" id="show-all-button" type="button">Все треки <span aria-hidden="true">→</span></button>
+            </div>
+            <div class="suggestion-grid" id="suggestion-grid"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <footer class="player-bar" aria-label="Аудиоплеер">
+      <div class="now-playing">
+        <div class="mini-cover cover-sunset" id="player-cover"><span></span></div>
+        <div class="now-playing-copy">
+          <strong id="player-track-name">Выбери трек</strong>
+          <span id="player-artist-name">Твоя музыка начнётся здесь</span>
+        </div>
+        <button class="icon-button like-button" id="player-like-button" type="button" aria-label="Добавить в избранное">♡</button>
+      </div>
+      <div class="player-controls">
+        <div class="control-buttons">
+          <button class="player-icon" type="button" aria-label="Предыдущий трек">|‹</button>
+          <button class="main-play-button" id="player-play-button" type="button" aria-label="Воспроизвести">▶</button>
+          <button class="player-icon" type="button" aria-label="Следующий трек">›|</button>
+        </div>
+        <div class="timeline">
+          <span id="elapsed-time">0:00</span>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+          <span id="duration-time">0:00</span>
+        </div>
+      </div>
+      <div class="player-extras">
+        <button class="player-icon volume-icon" type="button" aria-label="Громкость">◖</button>
+        <div class="volume-track"><span></span></div>
+        <button class="player-icon queue-icon" type="button" aria-label="Очередь">☷</button>
+      </div>
+    </footer>
+
+    <dialog class="modal" id="track-dialog">
+      <form class="modal-form" id="track-form">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">ТВОЯ КОЛЛЕКЦИЯ</p>
+            <h2>Добавить трек</h2>
+          </div>
+          <button class="icon-button close-button" type="button" data-close-dialog aria-label="Закрыть">×</button>
+        </div>
+        <label class="field-label">Название трека<input name="title" required maxlength="80" placeholder="Например, Город спит"></label>
+        <label class="field-label">Исполнитель<input name="artist" required maxlength="60" placeholder="Имя артиста"></label>
+        <label class="field-label">Жанр
+          <select name="genre">
+            <option>Электроника</option><option>Инди</option><option>Хип-хоп</option><option>Рок</option><option>Другое</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button class="outline-button" type="button" data-close-dialog>Отмена</button>
+          <button class="play-featured-button" type="submit">Добавить в плейлист</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="playlist-dialog">
+      <form class="modal-form" id="playlist-form">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">СОБЕРИ СВОЁ</p>
+            <h2>Новый плейлист</h2>
+          </div>
+          <button class="icon-button close-button" type="button" data-close-dialog aria-label="Закрыть">×</button>
+        </div>
+        <label class="field-label">Название<input name="name" required maxlength="50" placeholder="Например, На повторе"></label>
+        <p class="form-hint">Новый плейлист появится в твоей коллекции.</p>
+        <div class="modal-actions">
+          <button class="outline-button" type="button" data-close-dialog>Отмена</button>
+          <button class="play-featured-button" type="submit">Создать плейлист</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

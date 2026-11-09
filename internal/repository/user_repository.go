@@ -17,3 +17,4 @@ func NewUserRepository(db *gorm.DB) *UserRepository{
 func (r *UserRepository) Create(user *model.User) error{
 	return r.db.Create(user).Error
 }
+

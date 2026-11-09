@@ -34,7 +34,7 @@ func (r *PlaylistRepository) GetByUser(User_id uint) ([]model.Playlist, error){
 	return playlist, nil
 } 
 
-func (r *PlaylistRepository) GetAllByName(User_id uint, Name string) ([]model.Playlist, error) {
+func (r *PlaylistRepository) GetByName(User_id uint, Name string) ([]model.Playlist, error) {
     var playlists []model.Playlist
 
     if err := r.db.Where("name = ? AND (private = ? OR user_id = ?)", Name, false, User_id).

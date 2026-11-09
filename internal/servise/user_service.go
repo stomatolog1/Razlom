@@ -16,6 +16,7 @@ func NewUserService(repo *repository.UserRepository) *UserService{
 func (s *UserService) CreateUser(req model.CreateUserRequest)(*model.User, error){
 	user := &model.User{
 		Username: req.Username,
+		Login: req.Login,
 		Userpass: HashPass(req.Userpass),
 	}
 
