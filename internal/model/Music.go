@@ -12,9 +12,7 @@ type Music struct {
 }
 
 type NewMusicRequest struct {
-	Name     string `json:"name" binding:"required"`
-	Artist   string `json:"artist" binding:"required"`
-	Username int    `json:"username" binding:"required,min=1"`
-	Genre    string `json:"genre" binding:"required"`
-	Time     int    `json:"time"`
+	Name   string `form:"name" binding:"required,max=80"`
+	Artist string `form:"artist" binding:"required,max=80"`
+	Genre  string `form:"genre" binding:"required,max=40"`
 }

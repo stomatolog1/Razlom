@@ -9,7 +9,6 @@ type Playlist struct {
 }
 
 type NewPlaylistRequest struct {
-	ID_user int    `json:"id_user" binding:"required,min=1"`
-	Name    string `json:"name" binding:"required"`
+	Name    string `json:"name" binding:"required,max=60"`
 	Private bool   `json:"private"`
 }

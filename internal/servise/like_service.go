@@ -13,9 +13,21 @@ func NewLikeService(repo *repository.LikeRepository) *LikeService {
 	return &LikeService{repo: repo}
 }
 
-func (s *LikeService) CreateLike(req model.NewLikeRequest) (*model.Like, error) {
+func (s *LikeService) CreateLike(userID uint, req model.NewLikeRequest) (*model.Like, error) {
+	existingLikes, err := s.repo.GetAllForUser(userID)
+	if err != nil {
+		return nil, err
+	}
+	for _, existing := range existingLikes {
+		for _, musicID := range existing.ID_music {
+			if musicID == req.ID_music {
+				return &existing, nil
+			}
+		}
+	}
+
 	like := &model.Like{
-		ID_user:  req.ID_user,
+		ID_user:  int(userID),
 		ID_music: []int{req.ID_music},
 	}
 
@@ -27,6 +39,10 @@ func (s *LikeService) CreateLike(req model.NewLikeRequest) (*model.Like, error) 
 
 }
 
-func (s *LikeService) GetAllForUser(User_id uint)([]model.Like, error){
+func (s *LikeService) GetAllForUser(User_id uint) ([]model.Like, error) {
 	return s.repo.GetAllForUser(User_id)
+}
+
+func (s *LikeService) DeleteLike(userID uint, musicID int) error {
+	return s.repo.DeleteForUser(userID, musicID)
 }

@@ -27,11 +27,10 @@ func (r *MusicRepository) GetAll() ([]model.Music, error) {
 }
 
 func (r *MusicRepository) GetAllByUser(UserID uint) ([]model.Music, error) {
-	var music []model.Music
-	if err := r.db.Where("username = ?", UserID).Find(&music).Error; err != nil {
+	music := make([]model.Music, 0)
+	if err := r.db.Where("username = ?", UserID).Order("id DESC").Find(&music).Error; err != nil {
 		return nil, err
 	}
-
 	return music, nil
 }
 

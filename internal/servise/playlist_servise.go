@@ -13,10 +13,10 @@ func NewPlaylistService(repo *repository.PlaylistRepository) *PlaylistService {
 	return &PlaylistService{repo: repo}
 }
 
-func (s *PlaylistService) CreateNewPlaylist(req model.NewPlaylistRequest) (*model.Playlist, error) {
+func (s *PlaylistService) CreateNewPlaylist(req model.NewPlaylistRequest, userID uint) (*model.Playlist, error) {
 	playlist := &model.Playlist{
-		ID_user: req.ID_user,
-		Name: req.Name,
+		ID_user: int(userID),
+		Name:    req.Name,
 		Private: req.Private,
 	}
 
@@ -28,16 +28,22 @@ func (s *PlaylistService) CreateNewPlaylist(req model.NewPlaylistRequest) (*mode
 
 }
 
-func (s *PlaylistService) GetPublicPlaylist(User_id uint) ([]model.Playlist, error){ //все доступные не приватные плейлисты
+func (s *PlaylistService) GetPublicPlaylist(User_id uint) ([]model.Playlist, error) { //все доступные не приватные плейлисты
 	return s.repo.GetPublicPlaylist(User_id)
 }
 
-func (s *PlaylistService) GetByUser(User_id uint) ([]model.Playlist, error){ // все плелисты одного человека в Профиле, даёт приватные плейлисты если запрос сделал хозяин этих плейлистов
+func (s *PlaylistService) GetAllPublic() ([]model.Playlist, error) {
+	return s.repo.GetAllPublic()
+}
+
+func (s *PlaylistService) GetByUser(User_id uint) ([]model.Playlist, error) { // все плелисты одного человека в Профиле, даёт приватные плейлисты если запрос сделал хозяин этих плейлистов
 	return s.repo.GetByUser(User_id)
 }
 
-func (s *PlaylistService) GetByName(User_id uint, Name string) ([]model.Playlist, error){ // все плелисты одного человека в Профиле, даёт приватные плейлисты если запрос сделал хозяин этих плейлистов
+func (s *PlaylistService) GetByName(User_id uint, Name string) ([]model.Playlist, error) { // все плелисты одного человека в Профиле, даёт приватные плейлисты если запрос сделал хозяин этих плейлистов
 	return s.repo.GetByName(User_id, Name)
 }
 
-
+func (s *PlaylistService) AddMusic(userID, playlistID uint, musicID int) (*model.Playlist, error) {
+	return s.repo.AddMusic(userID, playlistID, musicID)
+}

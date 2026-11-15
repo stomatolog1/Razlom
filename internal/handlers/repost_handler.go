@@ -16,27 +16,36 @@ func NewRepostHandler(service *servise.RepostService) *RepostHandler {
 	return &RepostHandler{service: service}
 }
 
-func (h *RepostHandler) RegisterRoutes(r *gin.Engine) {
-	reposts := r.Group("/api/reposts")
-	reposts.GET("", h.GetAllForUser)
-	reposts.POST("", h.Create)
+func (h *RepostHandler) RegisterPublicRoutes(r gin.IRoutes) {
+	r.GET("/api/users/:id/reposts", h.GetPublicProfile)
 }
 
 func (h *RepostHandler) GetAllForUser(c *gin.Context) {
-	var query struct {
-		UserID uint `form:"user_id" binding:"required,min=1"`
-	}
-	if err := c.ShouldBindQuery(&query); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	reposts, err := h.service.GetAllUserRepost(query.UserID)
+	reposts, err := h.service.GetAllUserRepost(CurrentUserID(c))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get reposts"})
 		return
 	}
 
+	c.JSON(http.StatusOK, reposts)
+}
+
+func (h *RepostHandler) RegisterProtectedRoutes(r gin.IRoutes) {
+	r.GET("/reposts", h.GetAllForUser)
+	r.POST("/reposts", h.Create)
+}
+
+func (h *RepostHandler) GetPublicProfile(c *gin.Context) {
+	userID, err := ParseUserIDParam(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	reposts, err := h.service.GetAllUserRepost(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get reposts"})
+		return
+	}
 	c.JSON(http.StatusOK, reposts)
 }
 
@@ -47,7 +56,7 @@ func (h *RepostHandler) Create(c *gin.Context) {
 		return
 	}
 
-	repost, err := h.service.CreateRepost(req)
+	repost, err := h.service.CreateRepost(CurrentUserID(c), req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create repost"})
 		return

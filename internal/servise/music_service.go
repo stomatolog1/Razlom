@@ -13,13 +13,13 @@ func NewMusicService(repo *repository.MusicRepository) *MusicService {
 	return &MusicService{repo: repo}
 }
 
-func (s *MusicService) CreateMusic(req model.NewMusicRequest) (*model.Music, error) {
+func (s *MusicService) CreateMusic(req model.NewMusicRequest, userID uint, path string) (*model.Music, error) {
 	music := &model.Music{
-		Name:     req.Name,
-		Artist:   req.Artist,
-		Username: req.Username,
-		Genre:    req.Genre,
-		Time:     req.Time,
+		Name:        req.Name,
+		Artist:      req.Artist,
+		Username:    int(userID),
+		Genre:       req.Genre,
+		PathToMusic: path,
 	}
 
 	if err := s.repo.Create(music); err != nil {

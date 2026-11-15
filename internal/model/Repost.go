@@ -7,6 +7,5 @@ type Repost struct {
 }
 
 type CreateRepostRequest struct {
-	ID_user  int `json:"id_user" binding:"required,min=1"`
 	ID_music int `json:"id_music" binding:"required,min=1"`
 }
