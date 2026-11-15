@@ -1,17 +1,20 @@
 package model
 
 type Music struct {
-	ID uint `json:"id" gorm:"primaryKey"`
-	Name string `json:"Name"`
-	PathToMusic string `json:"PathToMusic"`
-	Username int `json:"Username"` // вместо артиста песни пишется тот кто её добавил на платформу ;3
-	Genre string `json:"Genre"`
-	Time int `json:"Time"`
-	Listing int `json:"Listing"`
+	ID          uint   `json:"id" gorm:"primaryKey"`
+	Name        string `json:"name"`
+	Artist      string `json:"artist"`
+	PathToMusic string `json:"pathToMusic"`
+	Username    int    `json:"username"`
+	Genre       string `json:"genre"`
+	Time        int    `json:"time"`
+	Listing     int    `json:"listing"`
 }
 
-type NewMusicRequest struct{
-	Name string `json:"Name"`
-	Username int `json:"Username"`
-	Genre string `json:"Genre"`
+type NewMusicRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Artist   string `json:"artist" binding:"required"`
+	Username int    `json:"username" binding:"required,min=1"`
+	Genre    string `json:"genre" binding:"required"`
+	Time     int    `json:"time"`
 }

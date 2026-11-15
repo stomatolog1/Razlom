@@ -1,15 +1,8 @@
-const tracks = [
-  { id: 1, title: "Теплее", artist: "Северный ветер", genre: "Инди", duration: "3:42", cover: "cover-sunset" },
-  { id: 2, title: "Пока горят окна", artist: "Линии", genre: "Электроника", duration: "4:08", cover: "cover-violet" },
-  { id: 3, title: "Медленный свет", artist: "Комната 12", genre: "Альтернатива", duration: "3:16", cover: "cover-blue" },
-  { id: 4, title: "После дождя", artist: "Миша Л.", genre: "Хип-хоп", duration: "2:58", cover: "cover-green" },
-  { id: 5, title: "Между нами", artist: "Северный ветер", genre: "Инди", duration: "3:31", cover: "cover-violet" },
-  { id: 6, title: "Тихий район", artist: "Линии", genre: "Электроника", duration: "4:21", cover: "cover-blue" },
-];
+const tracks = [];
 
 const playlists = [
-  { id: 1, name: "Ночная смена", trackIds: [1, 2, 3, 4], color: "#b46a57" },
-  { id: 2, name: "На повторе", trackIds: [5, 6], color: "#7891a4" },
+  { id: 1, name: "Ночная смена", trackIds: [], color: "#b46a57" },
+  { id: 2, name: "На повторе", trackIds: [], color: "#7891a4" },
   { id: 3, name: "Тихие утра", trackIds: [], color: "#849575" },
 ];
 
@@ -23,6 +16,40 @@ const emptyState = document.querySelector("#empty-state");
 const playlistNav = document.querySelector("#playlist-nav");
 const trackDialog = document.querySelector("#track-dialog");
 const playlistDialog = document.querySelector("#playlist-dialog");
+const apiError = document.querySelector("#api-error");
+const trackFormError = document.querySelector("#track-form-error");
+const coverClasses = ["cover-sunset", "cover-violet", "cover-blue", "cover-green"];
+
+function formatDuration(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return `${minutes}:${String(remainder).padStart(2, "0")}`;
+}
+
+function mapTrack(track) {
+  return {
+    id: track.id,
+    title: track.name,
+    artist: track.artist,
+    genre: track.genre,
+    duration: formatDuration(track.time || 0),
+    cover: coverClasses[track.id % coverClasses.length],
+  };
+}
+
+async function loadTracks() {
+  try {
+    const response = await fetch("/api/music");
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || "Не удалось загрузить треки.");
+    if (!Array.isArray(body)) throw new Error("Сервер вернул некорректный список треков.");
+    tracks.push(...body.map(mapTrack));
+    render();
+  } catch (error) {
+    apiError.textContent = `Не удалось связаться с сервером: ${error.message}`;
+    apiError.classList.remove("hidden");
+  }
+}
 
 function getSelectedPlaylist() {
   return playlists.find((playlist) => playlist.id === selectedPlaylistId);
@@ -265,26 +292,37 @@ document.querySelectorAll("[data-close-dialog]").forEach((button) => {
   button.addEventListener("click", () => button.closest("dialog").close());
 });
 
-document.querySelector("#track-form").addEventListener("submit", (event) => {
+document.querySelector("#track-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const formData = new FormData(event.currentTarget);
+  const form = event.currentTarget;
+  const submitButton = form.querySelector('[type="submit"]');
+  const formData = new FormData(form);
   const title = String(formData.get("title")).trim();
   const artist = String(formData.get("artist")).trim();
   const genre = String(formData.get("genre"));
-  const newTrack = {
-    id: Math.max(0, ...tracks.map((track) => track.id)) + 1,
-    title,
-    artist,
-    genre,
-    duration: "0:00",
-    cover: ["cover-sunset", "cover-violet", "cover-blue", "cover-green"][tracks.length % 4],
-  };
-  tracks.unshift(newTrack);
-  getSelectedPlaylist().trackIds.unshift(newTrack.id);
-  event.currentTarget.reset();
-  trackDialog.close();
-  showingAllTracks = false;
-  render();
+  submitButton.disabled = true;
+  trackFormError.classList.add("hidden");
+  try {
+    const response = await fetch("/api/music", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: title, artist, genre, username: 1, time: 0 }),
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || "Не удалось сохранить трек.");
+    const newTrack = mapTrack(body);
+    tracks.unshift(newTrack);
+    getSelectedPlaylist().trackIds.unshift(newTrack.id);
+    form.reset();
+    trackDialog.close();
+    showingAllTracks = false;
+    render();
+  } catch (error) {
+    trackFormError.textContent = `Не удалось добавить трек: ${error.message}`;
+    trackFormError.classList.remove("hidden");
+  } finally {
+    submitButton.disabled = false;
+  }
 });
 
 document.querySelector("#playlist-form").addEventListener("submit", (event) => {
@@ -305,6 +343,7 @@ document.querySelector("#playlist-form").addEventListener("submit", (event) => {
   playlistDialog.close();
   showingAllTracks = false;
   render();
+  loadTracks();
 });
 
 document.querySelector("#sort-button").addEventListener("click", () => {

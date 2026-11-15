@@ -110,6 +110,7 @@
             <button class="text-button" id="sort-button" type="button">Недавно добавленные <span aria-hidden="true">⌄</span></button>
           </div>
 
+          <p class="api-error hidden" id="api-error" role="alert"></p>
           <div class="track-list" id="track-list" aria-live="polite"></div>
           <p class="empty-state hidden" id="empty-state">Здесь пока пусто. Добавь первый трек в плейлист.</p>
 
@@ -164,6 +165,7 @@
           </div>
           <button class="icon-button close-button" type="button" data-close-dialog aria-label="Закрыть">×</button>
         </div>
+        <p class="api-error hidden" id="track-form-error" role="alert"></p>
         <label class="field-label">Название трека<input name="title" required maxlength="80" placeholder="Например, Город спит"></label>
         <label class="field-label">Исполнитель<input name="artist" required maxlength="60" placeholder="Имя артиста"></label>
         <label class="field-label">Жанр

@@ -6,32 +6,39 @@ import (
 	"gorm.io/gorm"
 )
 
-type MusicRepository struct{
+type MusicRepository struct {
 	db *gorm.DB
 }
 
-func NewMusicRepository(db *gorm.DB) *MusicRepository{
+func NewMusicRepository(db *gorm.DB) *MusicRepository {
 	return &MusicRepository{db: db}
 }
 
-func (r *MusicRepository) Create(music *model.Music) error{
+func (r *MusicRepository) Create(music *model.Music) error {
 	return r.db.Create(music).Error
 }
 
-func (r *MusicRepository) GetAllByUser(UserID uint) ([]model.Music, error){
+func (r *MusicRepository) GetAll() ([]model.Music, error) {
+	music := make([]model.Music, 0)
+	if err := r.db.Order("id DESC").Find(&music).Error; err != nil {
+		return nil, err
+	}
+	return music, nil
+}
+
+func (r *MusicRepository) GetAllByUser(UserID uint) ([]model.Music, error) {
 	var music []model.Music
-	if err:= r.db.Where("user_id = ?", UserID).Find(&music).Error; err != nil{
+	if err := r.db.Where("username = ?", UserID).Find(&music).Error; err != nil {
 		return nil, err
 	}
 
 	return music, nil
 }
 
-func (r *MusicRepository) GetAllByGenre(Genre string) ([]model.Music, error){
+func (r *MusicRepository) GetAllByGenre(Genre string) ([]model.Music, error) {
 	var music []model.Music
-	if err:= r.db.Where("genre = ?", Genre).Find(&music).Error; err != nil{
+	if err := r.db.Where("genre = ?", Genre).Find(&music).Error; err != nil {
 		return nil, err
 	}
-	return  music, nil
+	return music, nil
 }
-

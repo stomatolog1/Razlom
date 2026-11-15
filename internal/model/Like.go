@@ -2,12 +2,12 @@ package model
 
 type Like struct {
 	ID       uint  `json:"id" gorm:"primaryKey"`
-	ID_music []int `json:"id_music"`
+	ID_music []int `json:"id_music" gorm:"serializer:json"`
 	ID_user  int   `json:"id_user"`
-	Time     int   `json:"Time"`
+	Time     int   `json:"time"`
 }
 
 type NewLikeRequest struct {
-	ID_user  int `json:"ID_user"`
-	ID_music int `json:"ID_music"`
+	ID_user  int `json:"id_user" binding:"required,min=1"`
+	ID_music int `json:"id_music" binding:"required,min=1"`
 }

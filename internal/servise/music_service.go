@@ -7,33 +7,36 @@ import (
 
 type MusicService struct {
 	repo *repository.MusicRepository
-
 }
 
-func NewMusicrService(repo *repository.MusicRepository) *MusicService{
+func NewMusicService(repo *repository.MusicRepository) *MusicService {
 	return &MusicService{repo: repo}
 }
 
-func (s *MusicService) CreateMusic(req model.NewMusicRequest)(*model.Music, error){
+func (s *MusicService) CreateMusic(req model.NewMusicRequest) (*model.Music, error) {
 	music := &model.Music{
-		Name: req.Name,
+		Name:     req.Name,
+		Artist:   req.Artist,
 		Username: req.Username,
-		Genre: req.Genre,
+		Genre:    req.Genre,
+		Time:     req.Time,
 	}
-	
-	if err:= s.repo.Create(music); err != nil{
+
+	if err := s.repo.Create(music); err != nil {
 		return nil, err
 	}
 
 	return music, nil
 }
 
+func (s *MusicService) GetAll() ([]model.Music, error) {
+	return s.repo.GetAll()
+}
 
-func (s *MusicService) GetAllByUser(UserID uint)([]model.Music, error){
+func (s *MusicService) GetAllByUser(UserID uint) ([]model.Music, error) {
 	return s.repo.GetAllByUser(UserID)
 }
 
-
-func (s *MusicService) GetAllByGenre(Genre string)([]model.Music, error){
+func (s *MusicService) GetAllByGenre(Genre string) ([]model.Music, error) {
 	return s.repo.GetAllByGenre(Genre)
 }

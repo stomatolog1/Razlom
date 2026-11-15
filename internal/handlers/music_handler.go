@@ -1,37 +1,49 @@
 package handlers
 
 import (
+	"net/http"
+
 	"example/mymodule/internal/model"
 	"example/mymodule/internal/servise"
-	"net/http"
 	"github.com/gin-gonic/gin"
 )
 
-type MusicHnadler struct {
+type MusicHandler struct {
 	service *servise.MusicService
 }
 
-func NewMusicHandler(servise *servise.MusicService) *MusicHnadler {
-	return &MusicHnadler{service: servise}
+func NewMusicHandler(service *servise.MusicService) *MusicHandler {
+	return &MusicHandler{service: service}
 }
 
-func (h *MusicHnadler) RegisterRoutes(r *gin.Engine) {
-	musics := r.Group("api/music")
-	{
-		musics.POST("", h.Create)
-	}
+func (h *MusicHandler) RegisterRoutes(r *gin.Engine) {
+	music := r.Group("/api/music")
+	music.GET("", h.GetAll)
+	music.POST("", h.Create)
 }
 
-func (h *MusicHnadler) Create(c *gin.Context) {
-	var req model.NewMusicRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+func (h *MusicHandler) GetAll(c *gin.Context) {
+	music, err := h.service.GetAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get music"})
 		return
 	}
-	
-	user, err := h.service.CreateMusic(req)
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "User name already exists"})
+
+	c.JSON(http.StatusOK, music)
+}
+
+func (h *MusicHandler) Create(c *gin.Context) {
+	var req model.NewMusicRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusCreated, user)
+
+	music, err := h.service.CreateMusic(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create music"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, music)
 }
